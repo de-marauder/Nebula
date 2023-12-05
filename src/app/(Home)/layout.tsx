@@ -25,7 +25,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <main id='main-tag' className="">
+          <Hero />
+          <section id='dashboard-layout' className='p-4 pt-2 pb-20 w-full h-screen overflow-hidden'>
+            <TopNav />
+            {children}
+          </section>
+        </main>
       </body>
     </html>
   )
