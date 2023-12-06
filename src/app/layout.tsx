@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '@/app/globals.css'
+import { Web5Wrapper } from './_components/Auth/Web5Wrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -14,12 +15,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <Web5Wrapper>
+          {children}
+        </Web5Wrapper>
       </body>
-    </html>
+    </html >
   )
 }
 
