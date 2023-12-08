@@ -6,8 +6,7 @@ import { usePathname } from "next/navigation"
 export const SideNavItem: React.FC<{ item: string }> = ({ item }) => {
   const pathname = usePathname();
   const i = item === 'Feed' ? '' : item.toLocaleLowerCase();
-  console.log('pathname => ', pathname)
-  console.log('i => ', `/dashboard/${i}`)
+
   const isActive = i ? pathname === `/dashboard/${i}` : pathname === '/dashboard'
   const classes = 'text-white rounded-3xl p-4 mr-4 cursor-default hover:text-slate-900/90 hover:bg-slate-100/90'
   const activeClass = 'rounded-3xl p-4 mr-4 cursor-default text-slate-900/90 bg-slate-100/90'

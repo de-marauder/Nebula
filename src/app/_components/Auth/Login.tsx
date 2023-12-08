@@ -1,10 +1,11 @@
 'use client'
-import randomatic from 'randomatic'
-import { Web5 } from '@web5/api';
-import { FormEvent, MouseEvent, useContext, useEffect, useState } from "react"
+// import randomatic from 'randomatic'
+// import { Web5 } from '@web5/api';
+import { useContext, useEffect, useState } from "react"
 import { DidProvider, Web5Provider } from "../Context/Providers/Providers"
 import { useRouter } from 'next/navigation'
 
+var Web5: any = null
 export const Login = () => {
   const [enterExistingDID, setEnterExistingDID] = useState(false);
   const { updateWeb5 } = useContext(Web5Provider);
@@ -15,8 +16,27 @@ export const Login = () => {
     const did = localStorage.getItem('user-DID');
     updateDID(did);
   });
+  useEffect(() => {
+    const initWeb5 = async () => {
+      // @ts-ignore
+      Web5 = await import("@web5/api/browser");
+      // try {
+      //   const { web5, did } = await Web5.connect({ sync: "5s" });
 
-  console.log('DID => ', DID);
+      //   setWeb5(web5);
+      //   setMyDid(did);
+
+      //   if (web5 && did) {
+      //     console.log("Web5 initialized");
+      //   }
+      // } catch (error) {
+      //   console.error("Error initializing Web5:", error);
+      // }
+    };
+
+    initWeb5();
+  }, []);
+
   // const createNewDID = async () => {
   //   connect()
   //   router.push('/dashboard')
@@ -36,12 +56,17 @@ export const Login = () => {
       connectedDid: DID as string,
       sync: '5s'
     }
-    const { web5: web5Instance, did: userDid } = await Web5.connect(web5ConnectOptions);
-    localStorage.setItem('user-DID', userDid)
-    updateDID(userDid);
-    updateWeb5(web5Instance)
+    try {
+      const { web5: web5Instance, did: userDid } = await Web5.connect(web5ConnectOptions);
+      localStorage.setItem('user-DID', userDid)
+      updateDID(userDid);
+      updateWeb5(web5Instance)
       router.push('/dashboard')
+    } catch (error) {
+      console.log(error)
+    }
   }
+
   return (
     <section className='grid place-items-center h-full'>
       <div>
