@@ -5,7 +5,7 @@ import { Web5 } from "@web5/api";
 
 export const Web5Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [web5, setWeb5] = useState<Web5 | null | undefined>(null);
-  const [DID, setDID] = useState<string | null | undefined>('dhf');
+  const [DID, setDID] = useState<string | null | undefined>('');
   return (
     <Web5Provider.Provider value={{ web5, updateWeb5: setWeb5 }}>
       <DidProvider.Provider value={{ DID, updateDID: setDID }}>

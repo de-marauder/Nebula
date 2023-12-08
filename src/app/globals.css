@@ -4,6 +4,7 @@
 
 * {
   box-sizing: border-box;
+  transition: all ease 0.5;
 }
 *::-webkit-scrollbar {
   width: 3px;
