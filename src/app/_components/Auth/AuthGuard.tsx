@@ -6,27 +6,29 @@ import { DidProvider } from "../Context/Providers/Providers";
 
 export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
   // const [did, setDid] = useState('did')
-  const { DID: did } = useContext(DidProvider)
+  const { DID: did, updateDID } = useContext(DidProvider)
   const pathname = usePathname()
   const router = useRouter()
   useEffect(() => {
     const checkForUser = () => {
       const userDID = localStorage.getItem('user-DID');
-      if (!userDID) {
+      if (!userDID && (pathname !== '/' && pathname !== '/login')) {
         return router.push('/login')
-      } else if (pathname !== '/' && pathname !== '/login') {
-        // setDid(userDID);
-        router.push('/dashboard')
       }
+      if (userDID) {
+        updateDID(userDID);
+      }
+      // else if (pathname !== '/' && pathname !== '/login') {
+      //   // setDid(userDID);
+      //   router.push('/dashboard')
+      // }
     }
     checkForUser();
-  }, []);
+  }, [pathname, router, updateDID]);
 
   return (
     <>
-      {/* <DidProvider.Provider value={{ DID: did, updateDID: setDid }}> */}
       {did ? children : <Loader />}
-      {/* </DidProvider.Provider> */}
     </>
   )
 }
