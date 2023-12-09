@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const unsplashAPIBaseURL = 'https://api.unsplash.com'
 const getRandomPhotoURL = '/photos/random'
@@ -25,5 +25,74 @@ export const getRandomPhoto = async ({ search, count }: RandomPhotoReqConfig) =>
 // const defaultExport = {
 //   getRandomPhoto
 // }
+type StrRecord = Record<string, string>;
+type ApiResponse<TData = StrRecord> = { status: string; data: TData };
 
-// export default defaultExport
+type API = {
+  get: <T>(route: string) => Promise<{
+    data: ApiResponse<T>, error: undefined
+  } | {
+    data: undefined, error: string
+  }>;
+  post: <T>(route: string, body: ApiResponse['data']) => Promise<{
+    data: ApiResponse<T>, error: undefined
+  } | {
+    data: undefined, error: string
+  }>;
+  patch: <T>(route: string, body: ApiResponse['data']) => Promise<{
+    data: ApiResponse<T>, error: undefined
+  } | {
+    data: undefined, error: string
+  }>;
+}
+
+export const API: API = {
+  get: async function <T>(route: string) {
+    try {
+      const { data } = await axios.get<ApiResponse<T>>(route);
+      return { data }
+    } catch (error) {
+      console.debug(error)
+      const e = error as Error | AxiosError
+      let message = 'An error occured';
+      if (error instanceof AxiosError) {
+        message = error.response?.data.message;
+      }
+      return {
+        error: message
+      }
+    }
+  },
+  post: async function <T>(route: string, body: ApiResponse['data']) {
+    try {
+      const { data } = await axios.post<ApiResponse<T>>(route, body);
+      return { data }
+    } catch (error) {
+      console.debug(error)
+      const e = error as Error | AxiosError
+      let message = 'An error occured';
+      if (error instanceof AxiosError) {
+        message = error.response?.data.message;
+      }
+      return {
+        error: message
+      }
+    }
+  },
+  patch: async function <T>(route: string, body: ApiResponse['data']) {
+    try {
+      const { data } = await axios.patch<ApiResponse<T>>(route, body);
+      return { data }
+    } catch (error) {
+      console.debug(error)
+      const e = error as Error | AxiosError
+      let message = 'An error occured';
+      if (error instanceof AxiosError) {
+        message = error.response?.data.message;
+      }
+      return {
+        error: message
+      }
+    }
+  }
+}
