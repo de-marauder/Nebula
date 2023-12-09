@@ -10,7 +10,7 @@ import { Backdrop } from "../Utils/Backdrop/Backdrop";
 
 export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
 
-  const { error, loading, setError, setLoading } = useErrorLoader({
+  const { loading, setLoading } = useErrorLoader({
     error: '',
     loading: true
   })
@@ -20,7 +20,6 @@ export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
   const router = useRouter()
   useEffect(() => {
     const checkForUser = () => {
-      console.log('1', loading)
       const userDID = localStorage.getItem('user-DID');
       if (!userDID && (pathname !== '/' && pathname !== '/login')) {
         // router.push('/login')
@@ -30,19 +29,16 @@ export const AuthGuard: React.FC<{ children: ReactNode }> = ({ children }) => {
       //   setLoading(false)
       //   return router.push('/login')
       // }
-      console.log('2', loading)
       if (userDID) {
         updateDID(userDID);
-        console.log('3', loading)
         // setLoading(false)
         // return
       }
-      console.log('4', loading)
       setLoading(false)
     }
     checkForUser();
-  }, []);
-  // }, [pathname, router, updateDID, web5, setLoading]);
+    // }, []);
+  }, [pathname, updateDID, setLoading]);
   console.log('re-rendering...')
   return (
     <>

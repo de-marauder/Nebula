@@ -12,6 +12,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       db = await mongoose.connect(dbUrl);
 
       if (req.method === 'GET') {
+        if (req.params.did) {
+          const user = await UserModel.findOne({ did: req.params.did });
+          res.status(200).json({
+            status: 'success',
+            data: [user],
+          })
+        }
         const users = await UserModel.find();
         res.status(200).json({
           status: 'success',
@@ -33,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             db, res, statusCode: 400, message: 'No DID passed'
           })
         }
-        let user = await UserModel.findOne({did: u.did});
+        let user = await UserModel.findOne({ did: u.did });
         if (!user) {
           user = await UserModel.create(u);
         } else {

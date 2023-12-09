@@ -1,5 +1,5 @@
 'use client'
-import { Dispatch, SetStateAction, useContext, useState } from "react"
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react"
 import { DidProvider } from "../../Context/Providers/Providers"
 import { Button } from "../../Utils/Button/Button";
 import { API } from "@/app/_config/API";
@@ -11,7 +11,16 @@ import { Modal } from "../../Utils/Modal/Modal";
 export const Settings = () => {
   const { DID } = useContext(DidProvider);
   const { error, setError, loading, setLoading } = useErrorLoader({});
-  const [username, setUsername] = useState('username')
+  const [username, setUsername] = useState('')
+  useEffect(() => {
+    {
+      (async () => {
+        const { data, error } = await API.get<TUser[]>(`/api/users?did=${DID}`)
+        if (error) { setError(error) }
+        if (data) { setUsername(data.data[0].username) }
+      })()
+    }
+  }, [DID, setError])
   const o = [
     {
       name: 'username', type: 'text', value: username, disabled: false,

@@ -19,7 +19,7 @@ export const Feed = () => {
         if (data) { setData(data.data) }
       })()
     }
-  },[])
+  },[setError])
   return (
     <>
       <h1>Your Feed</h1>
