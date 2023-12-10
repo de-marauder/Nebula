@@ -1,10 +1,26 @@
 'use client'
-import { useContext, useState } from "react"
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react"
 import { DidProvider } from "../../Context/Providers/Providers"
+import { Button } from "../../Utils/Button/Button";
+import { API } from "@/app/_config/API";
+import { TUser } from "../Feed/Feed";
+import { useErrorLoader } from "@/app/_hooks/useErrorLoader";
+import { Loader } from "../../Utils/Loader/Loading";
+import { Modal } from "../../Utils/Modal/Modal";
 
 export const Settings = () => {
   const { DID } = useContext(DidProvider);
-  const username = 'username'
+  const { error, setError, loading, setLoading } = useErrorLoader({});
+  const [username, setUsername] = useState('')
+  useEffect(() => {
+    {
+      (async () => {
+        const { data, error } = await API.get<TUser[]>(`/api/users?did=${DID}`)
+        if (error) { setError(error) }
+        if (data) { setUsername(data.data[0].username) }
+      })()
+    }
+  }, [DID, setError])
   const o = [
     {
       name: 'username', type: 'text', value: username, disabled: false,
@@ -13,12 +29,24 @@ export const Settings = () => {
       name: 'did', type: 'text', value: DID, disabled: true,
     }
   ];
-  const updateUsername =()=>{
+  const updateUsername = async () => {
     console.log('updating username...')
+    const payload = {
+      username: username,
+      did: DID as string
+    }
+    const { data, error } = await API.patch<TUser>('/api/users', payload)
+    if (error) { setError(error) }
+    if (data) { setUsername(data.data.username) }
   }
 
   return (
     <>
+      {error && (
+        <Modal button={<Button action={() => setError('')}>Close</Button>}>
+          {error}
+        </Modal>
+      )}
       <section className="grid place-items-center h-full">
         <div className="mx-auto w-full">
           {o.map(({ name, type, value, disabled }, id) => {
@@ -27,18 +55,25 @@ export const Settings = () => {
               type={type}
               value={value as string}
               disabled={disabled}
+              onChange={setUsername}
             />
           })}
-          <button onClick={updateUsername} className='my-4 block mx-auto p-2 px-4 text-2xl bg-slate-900 text-white rounded-2xl'>update</button>
+          <Button action={updateUsername} >
+            {
+              loading
+                ? <Loader />
+                : 'Update'
+            }
+          </Button>
         </div>
       </section>
     </>
   )
 }
 type InputProps = {
-  name: string; type: string; value: string; disabled?: boolean;
+  name: string; type: string; value: string; disabled?: boolean; onChange: Dispatch<SetStateAction<string>>
 }
-const Input: React.FC<InputProps> = ({ name, type, value, disabled }) => {
+const Input: React.FC<InputProps> = ({ name, type, value, disabled, onChange }) => {
   const [showCopied, setShowCopied] = useState(false)
   return (
     <div className="relative flex mb-2 text-2xl w-full w-max-[800px]" id={name}>
@@ -53,6 +88,11 @@ const Input: React.FC<InputProps> = ({ name, type, value, disabled }) => {
       }
       <div className={`w-full relative`}>
         <input className={`p-2 rounded w-full`}
+          onChange={(e) => {
+            if (name === 'username' && onChange) {
+              onChange(e.target.value)
+            }
+          }}
           name={name} type={type} value={value} aria-disabled={!!disabled} />
         <div onClick={(e) => {
           e.preventDefault()
@@ -64,7 +104,7 @@ const Input: React.FC<InputProps> = ({ name, type, value, disabled }) => {
               setShowCopied(false)
             }, 2000)
           }
-        }} className={`${disabled ? 'p-2 absolute top-0 hover:cursor-pointer rounded w-full h-full bg-slate-900/80 text-white text-lg text-center content-[" "]' : 'hidden'}`}>Click to copy DID</div>
+        }} className={`${disabled ? 'p-2 absolute top-0 hover:cursor-pointer rounded w-full h-full bg-slate-900/80 text-white text-lg text-center' : 'hidden'}`}>Click to copy DID</div>
       </div>
     </div>
   )
