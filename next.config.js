@@ -1,8 +1,14 @@
 /** @type {import('next').NextConfig} */
 const webpack = require('webpack');
+const withPlugins = require("next-compose-plugins");
+const withImages = require("next-images");
+const withFonts = require("next-fonts");
+// const withTM = require("next-transpile-modules")(["react"]);
 
 const nextConfig = {
   images: {
+    // formats: ['image/webp'],
+    disableStaticImages: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -15,6 +21,18 @@ const nextConfig = {
     ],
   },
   webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.(png|jpe?g|gif|mp4|mp3)$/i,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            publicPath: '/.next',
+            name: 'static/media/[name].[hash].[ext]',
+          },
+        },
+      ],
+    })
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -38,4 +56,9 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+// module.exports = withImages(nextConfig);
+// module.exports = nextConfig
+module.exports = withPlugins(
+  [withImages, withFonts],
+  nextConfig
+);

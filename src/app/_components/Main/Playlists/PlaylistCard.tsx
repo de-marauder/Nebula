@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { FaPlus } from "react-icons/fa6";
-import img from '@/images/image-1-lg.jpg'
+import img from '@/static/images/image-1-lg.jpg'
 export const PlaylistCard: React.FC<{ create?: boolean }> = ({ create }) => {
 
   return (
@@ -15,7 +15,7 @@ const DefaultCard = () => (
   <div className="relative rounded overflow-hidden h-[200px] rounded shadow mb-2">
     {/* playlist name */}
     <div className="absolute inset-0 w-full h-full">
-      <Image className='w-full h-full' src={img} alt={'image'}></Image>
+      <Image className='w-full h-full' src={img} alt={'image'} width={200} height={200} />
       <div className='absolute inset-0 w-full h-full bg-slate-900/50'></div>
     </div>
     <div className="relative p-2 z-2 text-white font-bold">

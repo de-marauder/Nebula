@@ -1,7 +1,7 @@
 import mongoose, { Mongoose } from 'mongoose'
 import { NextApiRequest, NextApiResponse } from 'next';
 import { UserModel } from './_models/user';
-import { ErrorResponse } from '../_helpers/ErrorRepsonse';
+import { ErrorResponse } from '../../_helpers/ErrorRepsonse';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const dbUrl = process.env.DB_URL;
@@ -10,10 +10,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let db
     try {
       db = await mongoose.connect(dbUrl);
-
+      db.connection.on('error', console.error.bind(console, 'connection error:'));
+      db.connection.once('open', function () {
+        console.log('Database connected');
+      });
       if (req.method === 'GET') {
-        if (req.params.did) {
-          const user = await UserModel.findOne({ did: req.params.did });
+        if (req.query.did) {
+          const user = await UserModel.findOne({ did: req.query.did });
           res.status(200).json({
             status: 'success',
             data: [user],
@@ -82,7 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           data: user,
         })
       }
-      db.disconnect();
+      // db.disconnect();
     } catch (error) {
       console.debug(error)
       if (db instanceof Mongoose) {
